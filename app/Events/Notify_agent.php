@@ -2,9 +2,9 @@
 
 namespace App\Events;
 
-class ExampleEvent extends Event
+class Notify_agent extends Event
 {
-    public $forevent;   
+    public $agentdata;   
     /**
      * Create a new event instance.
      *
@@ -12,6 +12,6 @@ class ExampleEvent extends Event
      */
     public function __construct($data)
     {
-        $this->forevent = $data;
+        $this->agentdata = $data;
     }
 }

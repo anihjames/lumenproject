@@ -18,12 +18,10 @@ class NotifyAgent extends Mailable
      * @return void
      */ 
 
-    //  public function __construct($agents)
-    //  {
-    //      $this->agent = $agents;
-    //  }
-
-    
+     public function __construct($agents)
+     {
+         $this->agent = $agents;
+     }
 
      /**
      * Build the message
@@ -31,16 +29,10 @@ class NotifyAgent extends Mailable
      * @return $this
      */ 
 
-    //  public function build()
-    //  {
-    //      return $this->subject('Notification')->view('emails.notifyagent');
-    //  }
-
-    public function build()
-    {
-        return $this->subject('Test Queued Email')
-                        ->view('emails.email');
-    }
+     public function build()
+     {
+         return $this->subject('Notification')->view('emails.notifyagent');
+     }
 
      
 }

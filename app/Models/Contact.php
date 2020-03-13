@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-class Contact extends Model
+class Contact extends BaseModel
 {
 
     /**
@@ -23,4 +23,9 @@ class Contact extends Model
     protected $hidden = [
         'password',
     ];
+
+    public static function findOrCreate($contact)
+    {
+        
+    }
 }

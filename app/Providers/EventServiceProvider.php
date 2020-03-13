@@ -15,5 +15,20 @@ class EventServiceProvider extends ServiceProvider
         \App\Events\ExampleEvent::class => [
             \App\Listeners\ExampleListener::class,
         ],
+        \App\Events\ReopenTicket::class => [
+            \App\Listeners\ReopenTicketListener::class,
+        ],
+        \App\Events\TicketEvent::class => [
+            \App\Listeners\TicketListener::class,
+        ],
+        \App\Events\EventLog::class => [
+            \App\Listeners\EventLogListener::class,
+        ],
+        \App\Events\Notify_agent::class => [
+            \App\Listeners\notifyagentListener::class,
+        ],
     ];
+
+
+   
 }

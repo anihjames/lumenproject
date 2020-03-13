@@ -2,6 +2,11 @@
 
 namespace App\Repositories;
 
+use App\Events\EventLog;
+use App\Events\Notify_agent;
+use App\Models\Contact;
+use App\Events\ReopenTicket;
+use App\Events\TicketEvent;
 use App\interfaces\contacts;
 use App\interfaces\Tickets;
 use App\Mail\NotifyAgent;
@@ -13,9 +18,10 @@ use Illuminate\Support\Facades\Mail;
 class Ticketservices
 {
 
-    const STATUS_NEW  = 1;
-    const STATUS_OPEN = 2;
-    const STATUS_CLOSED = 3;
+    //const STATUS_NEW  = 1;
+    const STATUS_OPEN = 1;
+    const STATUS_CLOSED = 2;
+    const STATUS_REOPEN = 3;
 
     const PRIORITY_CRITICAL = 1;
     const PRIORITY_HIGH = 2;
@@ -36,14 +42,13 @@ class Ticketservices
         return $this->ticket->gettickets();
     }
 
-    public function getticketsbyId($id)
+    public function getticketsbyid($id)
     {
-        return $this->ticket->findbyId($id);
+        return $this->ticket->find($id);
     }
 
     public function log_ticket($ticketdata)
     {
-        
         if(!isset($ticketdata['contact_id'])){
             $contactdata = [
                 'fname'=> $ticketdata['fname'],
@@ -58,14 +63,15 @@ class Ticketservices
         }   
             $data = [
                  'ticket'=>$ticketdata,
-                'ticket_number'=> $this->generate_pid(),
+                'ticket_number'=> $this->generate_id(),
                  'contact_id'=> $this->contact_id,   
             ]; 
           
             $res = $this->ticket->log_ticket($data);
+            //fire event
             array_push($ticketdata, $this->newcontact);
             if($res){
-                Mail::to($this->newcontact->email)->send(new Ticket_info($ticketdata));
+                event(new TicketEvent($ticketdata)); 
                 return true;
             }else{
                 return false;
@@ -75,7 +81,15 @@ class Ticketservices
 
     public function update_ticket($data, $id)
     {
-        return $this->ticket->update($data, $id);
+        $old_ticketdata = $this->ticket->findbynumber($id);
+        $res = $this->ticket->update($data, $id);
+        $eventdes = "ticket update";
+        if($res){
+            event(new EventLog($old_ticketdata, $eventdes)); 
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public function dropnote($data, $id)
@@ -89,7 +103,8 @@ class Ticketservices
                 'text'=> 'you where tagged in a note',
             ];
             //notify the agent that the note was tag with
-            Mail::to($data['notify_to'])->send(new NotifyAgent($data));
+            event(new Notify_agent($data['notify_agent']));
+            //Mail::to($data['notify_to'])->send(new NotifyAgent($data));
          
         }
         $res = $this->ticket->comment($data, $id);
@@ -106,13 +121,7 @@ class Ticketservices
         }
     }
 
-
-    // public function forwardticket($id, $data)
-    // {
-    //     $checkticket_exist = $this->ticket->checkticketexists($id);
-    //     dd($data['email']);
-    // }
-
+    //drop a reply
     public function replytocustomer($data, $id)
     {
         $ticket = $this->ticket->findbynumber($id);
@@ -130,7 +139,7 @@ class Ticketservices
         }
     }
 
-    public function dropsolution($data, $id)
+    public function deletesolution($data, $id)
     {
         
     }
@@ -138,13 +147,20 @@ class Ticketservices
     public function closeticket($id)
     {
         $data = [
-            'status'=> 3,
+            'status'=> 2,
         ];
         return $this->ticket->update($data, $id);
     }
 
     public function reopenticket($id)
     {
+        $reopen = $this->ticket->reopenticket($id);
+        if($reopen){
+            $reopenticket = $this->ticket->findbynumber($id);
+            event(new ReopenTicket($reopenticket)); 
+            return $reopen; 
+        }
+       
 
     }
 
@@ -162,7 +178,7 @@ class Ticketservices
 
     }
 
-    public function generate_pid() {
+    public function generate_id() {
         $pin=mt_rand(1000,9999);
         $user_no=str_shuffle($pin);
         return $user_no;

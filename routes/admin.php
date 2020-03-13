@@ -17,6 +17,16 @@ $router->group(['prefix'=> 'api/v1/admin', 'middleware'=> 'auth'], function() us
     $router->post('/agent', 'AgentsController@store');
     $router->put('/agent/{id}', 'AgentsController@update');
     $router->delete('/agent/{id}', 'AgentsController@delete');
+    
+    //agent grouping
+
+
+    //ticket survey
+
+
+    //ratings management
+
+    
 
    
     $router->post('/source', 'SourceController@store');
@@ -38,6 +48,7 @@ $router->group(['prefix'=> 'api/v1/admin', 'middleware'=> 'auth'], function() us
     $router->get('/typeofissue/{id}', 'IssueController@show');
 
     $router->get('/status', 'AgentsController@getstatus');
+
 
     $router->delete('/ticket/{id}', 'TicketController@delete');
 

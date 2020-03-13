@@ -15,7 +15,7 @@
 
 
 
-$router->group(['prefix'=> 'api/v1'], function() use ($router) {
+$router->group(['prefix'=> 'api/v1', 'middleware'=> 'auth'], function() use ($router) {
 
     
 
@@ -26,32 +26,32 @@ $router->group(['prefix'=> 'api/v1'], function() use ($router) {
     $router->get('/ticket/{id}', 'TicketController@show');
     $router->post('/ticket', 'TicketController@store');
     $router->put('/ticket/{id}', 'TicketController@update');
+    $router->get('/ticket/reopen/{id}', 'TicketController@reopen');//reopen ticket
 
      //escalate ticket
      $router->put('/ticket/escalate/{id}', 'EscalationController@store');
  
      //id - the id of the ticket
      $router->put('/addnote/{id}', 'TicketController@Addnote');//adding a note to a ticket
-    // $router->put('/forwardticket/{id}', 'TicketController@Forward');//forward ticket to other agents
      $router->put('/replytocustomer/{id}', 'TicketController@ReplytoCustomer');// reply the customer 
 
     
      
 
-    //endpoints for creating sources
+    //endpoints for getting sources for the issue
     $router->get('/source', 'SourceController@index');
     $router->get('/source/{id}', 'SourceController@show');
 
-    //endpoints for creating level
+    //endpoints for getting system levels
     $router->get('/level', 'LevelController@index');
     $router->get('/level/{id}', 'LevelController@show');
     
-    //endpoints for creating priority
+    //endpoints for getting priority
     $router->get('/priority', 'PriorityController@index');
     $router->get('/priority/{id}', 'PriorityController@show');
    
 
-    //endpoints for creating types of issues
+    //endpoints for getting issuetypes
     $router->get('/typeofissue', 'IssueController@index');
     $router->get('/typeofissue/{id}', 'IssueController@show');
     

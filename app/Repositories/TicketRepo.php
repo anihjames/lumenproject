@@ -29,9 +29,9 @@ class TicketRepo implements Tickets
         return $this->tableinstance()->where('status', 1)->get();
     }
 
-    public function findbyId($id)
+    public function find($id)
     {
-        return $this->tableinstance()->find($id);
+        return $this->tableinstance()->where('ticket_number', $id)->first();                             
     }
 
     public function getlastInserted()
@@ -49,39 +49,41 @@ class TicketRepo implements Tickets
         $priority = $data['ticket']['priority'];
         $getresolutuion = DB::table('priority')->where('id', $priority)->value('resolution_time');
         
-        if(isset($data['contact_id']) || isset($data['ticket']['level_id']) ){
+        if(!isset($data['contact_id']) || !isset($data['ticket']['level_id']) ){
+
+            $ticketdetails = [
+                'subject'=> $data['ticket']['subject'],
+                'source'=> $data['ticket']['source'],
+                'priority'=> $data['ticket']['priority'],
+                'status'=> $data['ticket']['status'],
+                'program'=> $data['ticket']['program'],
+                'contact_id'=> intVal($data['contact_id']),
+                'agent_id'=> $data['ticket']['agent_id'],
+                // 'level_id'=> $data['ticket']['level_id'],
+                'description'=> $data['ticket']['description'],
+                'ticket_number'=> $data['ticket_number'],
+                'time_resolution'=> $getresolutuion,
+                'issue_type'=> $data['ticket']['issue_type'],
+                ];
           
-           $ticketdetails = [
-            'subject'=> $data['ticket']['subject'],
-            'source'=> $data['ticket']['source'],
-            'priority'=> $data['ticket']['priority'],
-            'status'=> $data['ticket']['status'],
-            'program'=> $data['ticket']['program'],
-            'contact_id'=> intVal($data['contact_id']),
-            'agent_id'=> $data['ticket']['agent_id'],
-            'level_id'=> $data['ticket']['level_id'],
-            'description'=> $data['ticket']['description'],
-            'ticket_number'=> $data['ticket_number'],
-            'issue_type'=> $data['ticket']['issue_type'],
-            // 'other_programs'=> $data['ticket']['other_program'],
-            // 'other_sources'=> $data['ticket']['other_source'],
-            'time_resolution'=> $getresolutuion,
-           ];
+           
         }else{
             $ticketdetails = [
-            'subject'=> $data['ticket']['subject'],
-            'source'=> $data['ticket']['source'],
-            'priority'=> $data['ticket']['priority'],
-            'status'=> $data['ticket']['status'],
-            'program'=> $data['ticket']['program'],
-            'contact_id'=> intVal($data['ticket']['contact_id']),
-            'agent_id'=> $data['ticket']['agent_id'],
-            // 'level_id'=> $data['ticket']['level_id'],
-            'description'=> $data['ticket']['description'],
-            'ticket_number'=> $data['ticket_number'],
-            'time_resolution'=> $getresolutuion,
-            'issue_type'=> $data['ticket']['issue_type'],
-            ];
+                'subject'=> $data['ticket']['subject'],
+                'source'=> $data['ticket']['source'],
+                'priority'=> $data['ticket']['priority'],
+                'status'=> $data['ticket']['status'],
+                'program'=> $data['ticket']['program'],
+                'contact_id'=> intVal($data['ticket']['contact_id']),
+                'agent_id'=> $data['ticket']['agent_id'],
+                'level_id'=> $data['ticket']['level_id'],
+                'description'=> $data['ticket']['description'],
+                'ticket_number'=> $data['ticket_number'],
+                'issue_type'=> $data['ticket']['issue_type'],
+                // 'other_programs'=> $data['ticket']['other_program'],
+                // 'other_sources'=> $data['ticket']['other_source'],
+                'time_resolution'=> $getresolutuion,
+               ];
         }
 
         return $this->tableinstance()->insert([$ticketdetails]);
@@ -144,6 +146,8 @@ class TicketRepo implements Tickets
             ]);
         }
 
+
+
          return DB::table('tickets')->where('ticket_number', $ticket_number)->update([
             'is_escalated'=> true,
          ]);
@@ -152,7 +156,9 @@ class TicketRepo implements Tickets
 
     public function reopenticket($id)
     {
-
+        return DB::table('tickets')->where('ticket_number', $id)->update([
+            'status'=> 3
+        ]);
     }
 
     public function delete($id)

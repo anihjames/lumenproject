@@ -10,7 +10,7 @@ interface Tickets
     public function escalate($data,$ticket_number);
     public function log_ticket($data);
     public function getlastInserted();
-    public function findbyId($id);
+    public function find($id);
     public function findbynumber($id);
     public function update($data, $id);
     public function comment($data, $id);

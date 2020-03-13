@@ -31,11 +31,13 @@ class Ticket_info extends Mailable
 
     public function build()
     {
+       
         return $this->subject('Support Ticket information')->view('emails.ticket_info')->with([
             'fname'=> $this->ticket[0]->fname,
             'subject'=> $this->ticket['subject'],
             'priority'=> $this->ticket['priority'],
             'status'=> $this->ticket['status'],
+          
         ]);
     }
 }

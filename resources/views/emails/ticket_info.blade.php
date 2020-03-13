@@ -7,12 +7,9 @@
     <title>Document</title>
 </head>
 <body>
+    <h5>Hi {{ ucfirst($fname) }}</h5>
     <p>
-        Thank you {{ ucfirst($fname) }} for contacting our support team. A support ticket has been opened for you. You will be notified when a response is made by email. The details of your ticket are shown below:
+        Thank you for contacting our support team. A support ticket has been opened for you. You will be notified when a response is made by email. The details of your ticket are shown below:
     </p>
-
-    <p>Title: {{ $subject }}</p>
-    <p>Priority: {{ $priority }}</p>
-    <p>Status: {{ $status }}</p>
 </body>
 </html>
